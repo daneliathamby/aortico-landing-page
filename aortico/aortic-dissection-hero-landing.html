@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Interactive Type A Aortic Dissection | Aortico</title>
+  <style>
+    :root {
+      --page: #071115;
+      --panel: #0c1a20;
+      --panel-2: #102129;
+      --line: rgba(112, 211, 204, 0.25);
+      --cyan: #70d3cc;
+      --cyan-bright: #3fd1ca;
+      --white: #eef6f5;
+      --muted: #91a4a5;
+      --yellow: #e4ba49;
+      --true: #d74d51;
+      --false: #721525;
+      --wall: #dc746d;
+      --flap: #ffd0c8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 18% 82%, rgba(35, 151, 145, 0.17), transparent 34rem),
+        linear-gradient(135deg, #071115, #0a181d 52%, #071115);
+      color: var(--white);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: clamp(20px, 4vw, 58px);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .experience {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: minmax(270px, 0.68fr) minmax(500px, 1fr);
+      gap: clamp(32px, 5vw, 76px);
+      align-items: center;
+    }
+
+    .copy {
+      max-width: 31rem;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 18px;
+      color: var(--cyan);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 24px;
+      height: 2px;
+      content: "";
+      background: var(--yellow);
+    }
+
+    h1 {
+      max-width: 11ch;
+      margin: 0;
+      font-size: clamp(2.5rem, 5vw, 4.7rem);
+      font-weight: 400;
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+    }
+
+    .intro {
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.35vw, 1.15rem);
+      line-height: 1.7;
+    }
+
+    .phase-copy {
+      min-height: 7.4rem;
+      margin-top: 30px;
+      padding: 2px 0 0 18px;
+      border-left: 1px solid var(--line);
+    }
+
+    .phase-label {
+      margin: 0 0 8px;
+      color: var(--cyan);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .phase-copy h2 {
+      margin: 0;
+      font-size: clamp(1.22rem, 2vw, 1.6rem);
+      font-weight: 600;
+    }
+
+    .phase-description {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .visualization {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: transparent;
+      box-shadow: 0 30px 88px rgba(0, 0, 0, 0.34);
+    }
+
+    .stage {
+      position: relative;
+      aspect-ratio: 1;
+      overflow: hidden;
+    }
+
+    .stage > svg {
+      display: none;
+    }
+
+    .anatomy-render {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .anatomy-render img {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .disease-layer {
+      clip-path: circle(0% at 35% 66%);
+      will-change: clip-path, opacity;
+    }
+
+    .aneurysm-layer {
+      opacity: 0;
+      will-change: opacity;
+    }
+
+    .rupture-layer {
+      opacity: 0;
+      will-change: opacity;
+    }
+
+    .anatomy-render::after {
+      content: none;
+    }
+
+    .status {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border: 1px solid rgba(112, 211, 204, 0.3);
+      border-radius: 999px;
+      background: rgba(7, 17, 21, 0.76);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+    }
+
+    .status::before {
+      width: 7px;
+      height: 7px;
+      content: "";
+      border-radius: 50%;
+      background: var(--cyan-bright);
+      box-shadow: 0 0 0 4px rgba(63, 209, 202, 0.12);
+    }
+
+    .controls {
+      padding: 18px;
+      border-top: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    }
+
+    .timeline {
+      width: 100%;
+      height: 5px;
+      margin: 0;
+      appearance: none;
+      border-radius: 99px;
+      outline: none;
+      background:
+        linear-gradient(
+          90deg,
+          var(--cyan-bright) 0 var(--progress, 0%),
+          rgba(145, 164, 165, 0.24) var(--progress, 0%) 100%
+        );
+      cursor: pointer;
+    }
+
+    .timeline::-webkit-slider-thumb {
+      width: 19px;
+      height: 19px;
+      appearance: none;
+      border: 3px solid var(--panel);
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 0 1px var(--cyan);
+    }
+
+    .timeline::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border: 3px solid var(--panel);
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 0 1px var(--cyan);
+    }
+
+    .ticks {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      margin-top: 12px;
+      color: var(--muted);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.61rem;
+    }
+
+    .ticks span:nth-child(2),
+    .ticks span:nth-child(3) {
+      text-align: center;
+    }
+
+    .ticks span:last-child {
+      text-align: right;
+    }
+
+    .control-row {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 17px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .control-button {
+      min-width: 42px;
+      height: 38px;
+      padding: 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(112, 211, 204, 0.055);
+      color: var(--white);
+      cursor: pointer;
+    }
+
+    .control-button:hover,
+    .control-button:focus-visible {
+      border-color: rgba(112, 211, 204, 0.7);
+      background: rgba(112, 211, 204, 0.12);
+      outline: none;
+    }
+
+    .play {
+      min-width: 92px;
+      border-color: var(--cyan);
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .progress-readout {
+      color: var(--muted);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.7rem;
+    }
+
+    .phase-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .phase-button {
+      min-height: 42px;
+      padding: 7px 4px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.68rem;
+      cursor: pointer;
+    }
+
+    .phase-button:hover,
+    .phase-button:focus-visible,
+    .phase-button[aria-current="step"] {
+      border-color: var(--line);
+      background: rgba(112, 211, 204, 0.06);
+      color: var(--white);
+      outline: none;
+    }
+
+    .note {
+      grid-column: 1 / -1;
+      margin: -15px 0 0;
+      color: rgba(145, 164, 165, 0.72);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.66rem;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .anatomy-label {
+      fill: #b9cac9;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+
+    .label-line {
+      fill: none;
+      stroke: rgba(185, 202, 201, 0.6);
+      stroke-width: 1.5;
+      stroke-dasharray: 4 5;
+    }
+
+    @media (max-width: 840px) {
+      body {
+        display: block;
+      }
+
+      .experience {
+        grid-template-columns: 1fr;
+        max-width: 620px;
+        margin: 0 auto;
+      }
+
+      .copy {
+        max-width: none;
+      }
+
+      h1 {
+        max-width: 14ch;
+      }
+
+      .note {
+        margin-top: 0;
+      }
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 16px 12px 28px;
+      }
+
+      .visualization {
+        border-radius: 18px;
+      }
+
+      .controls {
+        padding: 15px;
+      }
+
+      .phase-buttons {
+        gap: 2px;
+      }
+
+      .phase-button {
+        font-size: 0.59rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        scroll-behavior: auto !important;
+      }
+    }
+    /* Hero embed: retain the original visualization and controls while allowing
+       the parent website background to remain visible around them. */
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      background: none !important;
+      background-color: transparent !important;
+    }
+
+    body {
+      display: block;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .experience {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .copy,
+    .note {
+      display: none !important;
+    }
+
+    .visualization {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border: 0;
+      border-radius: 0;
+      background: none !important;
+      background-color: transparent !important;
+      box-shadow: none;
+    }
+
+    .stage {
+      min-height: 0;
+      aspect-ratio: auto;
+      background: none !important;
+      background-color: transparent !important;
+    }
+
+    .anatomy-render {
+      inset: -42px 0 82px;
+      background: none !important;
+      background-color: transparent !important;
+    }
+
+    .flow-stages {
+      position: absolute;
+      right: 7%;
+      bottom: 52px;
+      left: 7%;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: center;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(7, 17, 21, 0.72);
+      color: var(--muted);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.025em;
+      text-align: center;
+    }
+
+    .flow-stage {
+      position: relative;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      letter-spacing: inherit;
+      text-align: center;
+      cursor: pointer;
+      transition: color 180ms ease;
+    }
+
+    .flow-stage:focus-visible {
+      border-radius: 4px;
+      outline: 1px solid var(--cyan-bright);
+      outline-offset: 4px;
+    }
+
+    .flow-stage:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -0.22rem;
+      color: rgba(126, 211, 206, 0.46);
+    }
+
+    .flow-stage.is-active {
+      color: var(--cyan-bright);
+    }
+
+    .controls {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <main class="experience">
+    <section class="copy" aria-labelledby="page-title">
+      <p class="eyebrow">Ascending aorta · Type A</p>
+      <h1 id="page-title">Explore dissection progression.</h1>
+      <p class="intro">
+        Move from a normal ascending aorta to aneurysmal enlargement, then follow
+        an entry tear, wall separation, and formation of a false lumen.
+      </p>
+
+      <div class="phase-copy" aria-live="polite">
+        <p class="phase-label" id="phase-label">Phase 1 of 5</p>
+        <h2 id="phase-title">Normal ascending aorta</h2>
+        <p class="phase-description" id="phase-description">
+          The ascending aorta begins with a smaller caliber and one continuous lumen.
+        </p>
+      </div>
+    </section>
+
+    <section class="visualization" aria-label="Interactive original schematic of Type A aortic dissection">
+      <div class="stage">
+        <div class="anatomy-render" aria-hidden="true">
+          <img
+            id="normal-layer"
+            src="./assets/medical/ascending-aorta-normal-transparent.png"
+            alt=""
+            draggable="false"
+          >
+          <img
+            class="aneurysm-layer"
+            id="aneurysm-layer"
+            src="./assets/medical/ascending-aorta-aneurysm-v2-transparent.png"
+            alt=""
+            draggable="false"
+          >
+          <img
+            class="disease-layer"
+            id="disease-layer"
+            src="./assets/medical/dissection-final-transparent.png"
+            alt=""
+            draggable="false"
+          >
+          <img
+            class="rupture-layer"
+            id="rupture-layer"
+            src="./assets/medical/rupture-transparent.png"
+            alt=""
+            draggable="false"
+          >
+        </div>
+        <div class="flow-stages" aria-label="Aortic progression stages">
+          <button class="flow-stage is-active" type="button" data-progress="0">Normal</button>
+          <button class="flow-stage" type="button" data-progress="0.34">Aneurysm</button>
+          <button class="flow-stage" type="button" data-progress="0.82">Dissection</button>
+          <button class="flow-stage" type="button" data-progress="1">Rupture</button>
+        </div>
+
+        <svg viewBox="0 0 720 650" role="img" aria-labelledby="svg-title svg-description">
+          <title id="svg-title">Ascending aortic dissection progression</title>
+          <desc id="svg-description">
+            An original schematic showing an entry tear, an intimal flap, and a false lumen
+            progressing from the ascending aorta through the arch.
+          </desc>
+
+          <defs>
+            <filter id="soft-shadow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity="0.28"/>
+            </filter>
+
+            <filter id="soft-glow" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="8"/>
+            </filter>
+
+            <linearGradient id="wall-gradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#f09a8d"/>
+              <stop offset="0.48" stop-color="#d86e68"/>
+              <stop offset="1" stop-color="#9e3f45"/>
+            </linearGradient>
+
+            <linearGradient id="lumen-gradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#e76261"/>
+              <stop offset="1" stop-color="#a52638"/>
+            </linearGradient>
+
+            <linearGradient id="false-gradient" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#7d1428"/>
+              <stop offset="0.7" stop-color="#5c0e20"/>
+              <stop offset="1" stop-color="#43101b"/>
+            </linearGradient>
+
+            <path
+              id="aorta-centerline"
+              d="M258 580 C252 482 247 365 270 255 C288 166 352 116 430 128 C512 141 544 207 529 282 C518 339 493 390 481 580"
+            />
+
+            <clipPath id="vessel-clip">
+              <use href="#aorta-centerline" fill="none" stroke="#fff" stroke-width="112" stroke-linecap="round"/>
+            </clipPath>
+          </defs>
+
+          <!-- Context branches -->
+          <g fill="none" stroke-linecap="round" filter="url(#soft-shadow)">
+            <path d="M355 147 C340 106 336 78 341 48" stroke="url(#wall-gradient)" stroke-width="42"/>
+            <path d="M415 135 C416 91 425 61 443 35" stroke="url(#wall-gradient)" stroke-width="42"/>
+            <path d="M471 155 C493 119 516 97 545 81" stroke="url(#wall-gradient)" stroke-width="42"/>
+            <path d="M355 147 C340 106 336 78 341 48" stroke="#a92e3d" stroke-width="27"/>
+            <path d="M415 135 C416 91 425 61 443 35" stroke="#a92e3d" stroke-width="27"/>
+            <path d="M471 155 C493 119 516 97 545 81" stroke="#a92e3d" stroke-width="27"/>
+          </g>
+
+          <!-- Single outer vessel and original lumen -->
+          <g fill="none" stroke-linecap="round" filter="url(#soft-shadow)">
+            <use href="#aorta-centerline" stroke="url(#wall-gradient)" stroke-width="128"/>
+            <use href="#aorta-centerline" stroke="#7d2330" stroke-width="107"/>
+            <use href="#aorta-centerline" stroke="url(#lumen-gradient)" stroke-width="91"/>
+          </g>
+
+          <!-- Subtle healthy flow channel -->
+          <use
+            href="#aorta-centerline"
+            fill="none"
+            stroke="rgba(255,190,180,0.24)"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-dasharray="10 14"
+          />
+
+          <!-- False lumen and flap are revealed by JavaScript -->
+          <path
+            id="false-lumen"
+            d="M222 560 C219 468 214 359 239 245 C260 151 331 94 421 107 C505 119 551 190 544 267 C538 323 509 374 499 516"
+            fill="none"
+            stroke="url(#false-gradient)"
+            stroke-width="34"
+            stroke-linecap="round"
+            opacity="0"
+            clip-path="url(#vessel-clip)"
+          />
+
+          <path
+            id="intimal-flap"
+            d="M240 558 C236 468 232 361 257 251 C276 166 339 119 424 130 C498 140 528 205 516 276 C508 329 482 375 473 515"
+            fill="none"
+            stroke="var(--flap)"
+            stroke-width="5"
+            stroke-linecap="round"
+            opacity="0"
+            clip-path="url(#vessel-clip)"
+          />
+
+          <!-- Entry tear -->
+          <g id="entry-tear" opacity="0">
+            <ellipse cx="243" cy="474" rx="24" ry="15" fill="#4a0c17" transform="rotate(-78 243 474)"/>
+            <path
+              d="M232 490 C239 482 247 479 257 481"
+              fill="none"
+              stroke="#ffd0c8"
+              stroke-width="5"
+              stroke-linecap="round"
+            />
+            <ellipse cx="242" cy="474" rx="33" ry="24" fill="#b42f3d" opacity="0.22" filter="url(#soft-glow)"/>
+          </g>
+
+          <!-- Directional particles generated in original SVG -->
+          <g id="flow-particles" fill="#ffb0a6" opacity="0.72">
+            <circle r="4"><animateMotion dur="3.6s" repeatCount="indefinite"><mpath href="#aorta-centerline"/></animateMotion></circle>
+            <circle r="3"><animateMotion begin="-1.2s" dur="3.6s" repeatCount="indefinite"><mpath href="#aorta-centerline"/></animateMotion></circle>
+            <circle r="3.5"><animateMotion begin="-2.4s" dur="3.6s" repeatCount="indefinite"><mpath href="#aorta-centerline"/></animateMotion></circle>
+          </g>
+
+          <!-- Cross-section inset -->
+          <g transform="translate(86 382)">
+            <circle cx="76" cy="76" r="71" fill="#081318" stroke="rgba(112,211,204,0.3)" stroke-width="2"/>
+            <circle cx="76" cy="76" r="55" fill="url(#lumen-gradient)" stroke="url(#wall-gradient)" stroke-width="12"/>
+            <path
+              id="cross-false"
+              d="M55 27 C22 41 15 85 37 112 C51 129 64 133 76 130 C57 108 54 77 69 54 C77 41 88 32 99 27 C83 21 68 21 55 27Z"
+              fill="url(#false-gradient)"
+              opacity="0"
+            />
+            <path
+              id="cross-flap"
+              d="M99 27 C77 42 65 61 63 82 C62 101 68 117 76 130"
+              fill="none"
+              stroke="var(--flap)"
+              stroke-width="4"
+              stroke-linecap="round"
+              opacity="0"
+            />
+            <text x="76" y="167" text-anchor="middle" class="anatomy-label">CROSS-SECTION</text>
+          </g>
+
+          <!-- Labels appear with progression -->
+          <g id="disease-labels" opacity="0">
+            <path class="label-line" d="M110 254 H214"/>
+            <text x="105" y="249" text-anchor="end" class="anatomy-label">FALSE LUMEN</text>
+            <path class="label-line" d="M115 296 H253"/>
+            <text x="110" y="291" text-anchor="end" class="anatomy-label">TRUE LUMEN</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="controls">
+        <input
+          class="timeline"
+          id="timeline"
+          type="range"
+          min="0"
+          max="1000"
+          value="0"
+          step="1"
+          aria-label="Dissection progression"
+        >
+        <div class="control-row">
+          <div class="buttons">
+            <button class="control-button play" id="play-button" type="button">Play</button>
+            <button class="control-button" id="restart-button" type="button" aria-label="Restart animation">↺</button>
+          </div>
+          <span class="progress-readout" id="progress-readout">0% progression</span>
+        </div>
+
+        <div class="phase-buttons" aria-label="Animation phases">
+          <button class="phase-button" type="button" data-progress="0" aria-current="step">Healthy</button>
+          <button class="phase-button" type="button" data-progress="0.34">Aneurysm</button>
+          <button class="phase-button" type="button" data-progress="0.82">Dissection</button>
+          <button class="phase-button" type="button" data-progress="1">Rupture</button>
+        </div>
+      </div>
+    </section>
+
+    <p class="note">
+      Original Aortico schematic for research communication. Conceptual—not a diagnostic or patient-specific result.
+    </p>
+  </main>
+
+  <script>
+    (() => {
+      const timeline = document.querySelector("#timeline");
+      const playButton = document.querySelector("#play-button");
+      const restartButton = document.querySelector("#restart-button");
+      const progressReadout = document.querySelector("#progress-readout");
+      const normalLayer = document.querySelector("#normal-layer");
+      const aneurysmLayer = document.querySelector("#aneurysm-layer");
+      const diseaseLayer = document.querySelector("#disease-layer");
+      const ruptureLayer = document.querySelector("#rupture-layer");
+      const phaseLabel = document.querySelector("#phase-label");
+      const phaseTitle = document.querySelector("#phase-title");
+      const phaseDescription = document.querySelector("#phase-description");
+      const phaseButtons = [...document.querySelectorAll(".phase-button")];
+      const flowSteps = [...document.querySelectorAll(".flow-stage")];
+      const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const phases = [
+        {
+          from: 0,
+          label: "Normal",
+          title: "Healthy ascending aorta",
+          description: "The ascending aorta begins with a smaller caliber and one continuous lumen."
+        },
+        {
+          from: 0.18,
+          label: "Aneurysm",
+          title: "Ascending aortic aneurysm",
+          description: "The ascending segment enlarges while the wall and lumen initially remain intact."
+        },
+        {
+          from: 0.42,
+          label: "Dissection",
+          title: "Wall separation and false lumen",
+          description: "Blood separates the wall layers, creating a false lumen beside the continuous true lumen."
+        },
+        {
+          from: 0.86,
+          label: "Rupture",
+          title: "Aortic rupture",
+          description: "The dissected outer wall fails, allowing blood to escape outside the aorta."
+        }
+      ];
+
+      let progress = 0;
+      let playing = false;
+      let animationFrame = 0;
+      let lastTime = 0;
+      let resumeTimer = 0;
+
+      const clamp = (value) => Math.min(1, Math.max(0, value));
+      const map = (value, start, end) => clamp((value - start) / (end - start));
+
+      const updatePhaseCopy = () => {
+        let index = 0;
+        phases.forEach((phase, phaseIndex) => {
+          if (progress >= phase.from) index = phaseIndex;
+        });
+
+        phaseLabel.textContent = `Phase ${index + 1} of ${phases.length}`;
+        phaseTitle.textContent = phases[index].title;
+        phaseDescription.textContent = phases[index].description;
+        flowSteps.forEach((step, stepIndex) => {
+          step.classList.toggle("is-active", stepIndex === index);
+          step.setAttribute("aria-pressed", stepIndex === index ? "true" : "false");
+        });
+        phaseButtons.forEach((button, buttonIndex) => {
+          if (buttonIndex === index) {
+            button.setAttribute("aria-current", "step");
+          } else {
+            button.removeAttribute("aria-current");
+          }
+        });
+      };
+
+      const render = () => {
+        const aneurysmProgress = map(progress, 0.06, 0.34);
+        const diseaseProgress = map(progress, 0.42, 0.78);
+        const revealRadius = diseaseProgress * 118;
+        const ruptureActive = progress >= 0.86;
+        const previousGeometryOpacity = ruptureActive ? 0 : 1;
+        normalLayer.style.opacity = String(previousGeometryOpacity);
+        aneurysmLayer.style.opacity = String(aneurysmProgress * previousGeometryOpacity);
+        diseaseLayer.style.clipPath = `circle(${revealRadius}% at 35% 66%)`;
+        diseaseLayer.style.opacity = String(map(progress, 0.4, 0.53) * previousGeometryOpacity);
+        ruptureLayer.style.opacity = ruptureActive ? "1" : "0";
+
+        timeline.value = String(Math.round(progress * 1000));
+        timeline.style.setProperty("--progress", `${progress * 100}%`);
+        progressReadout.textContent = `${Math.round(progress * 100)}% progression`;
+        playButton.textContent = playing ? "Pause" : "Play";
+        updatePhaseCopy();
+      };
+
+      const stop = () => {
+        playing = false;
+        cancelAnimationFrame(animationFrame);
+        render();
+      };
+
+      const animate = (time) => {
+        if (!playing) return;
+        if (!lastTime) lastTime = time;
+        const elapsed = time - lastTime;
+        lastTime = time;
+        progress = clamp(progress + elapsed / 6800);
+        render();
+
+        if (progress >= 1) {
+          stop();
+          return;
+        }
+
+        animationFrame = requestAnimationFrame(animate);
+      };
+
+      const play = () => {
+        playing = true;
+        lastTime = 0;
+        render();
+        animationFrame = requestAnimationFrame(animate);
+      };
+
+      playButton.addEventListener("click", () => {
+        if (playing) {
+          stop();
+        } else {
+          play();
+        }
+      });
+
+      restartButton.addEventListener("click", () => {
+        stop();
+        progress = 0;
+        render();
+        if (!reduceMotion) play();
+      });
+
+      const pauseThenResume = (nextProgress) => {
+        clearTimeout(resumeTimer);
+        stop();
+        progress = nextProgress;
+        render();
+        resumeTimer = window.setTimeout(play, 5000);
+      };
+
+      const scheduleResume = () => {
+        clearTimeout(resumeTimer);
+        resumeTimer = window.setTimeout(play, 5000);
+      };
+
+      timeline.addEventListener("pointerdown", () => {
+        clearTimeout(resumeTimer);
+        stop();
+      });
+
+      timeline.addEventListener("keydown", () => {
+        clearTimeout(resumeTimer);
+        stop();
+      });
+
+      timeline.addEventListener("input", () => {
+        progress = Number(timeline.value) / 1000;
+        render();
+      });
+
+      timeline.addEventListener("change", scheduleResume);
+      timeline.addEventListener("pointerup", scheduleResume);
+      timeline.addEventListener("pointercancel", scheduleResume);
+
+      phaseButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          pauseThenResume(Number(button.dataset.progress));
+        });
+      });
+
+      flowSteps.forEach((button) => {
+        button.addEventListener("click", () => {
+          clearTimeout(resumeTimer);
+          stop();
+          progress = Number(button.dataset.progress);
+          render();
+        });
+      });
+
+      render();
+      play();
+    })();
+  </script>
+</body>
+</html>
