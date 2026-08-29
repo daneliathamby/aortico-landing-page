@@ -1,28 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Aortico</title>
 
+  <meta
+    name="description"
+    content="AI-driven patient-specific assessment of aortic wall mechanics from imaging."
+  >
+
+
+  <!-- MONTSERRAT FONT -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
 
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap"
     rel="stylesheet"
   >
 
+
   <style>
 
+    /* =========================================
+       AORTICO LANDING PAGE
+       ========================================= */
+
     :root {
+
       --background: #171717;
-      --header: #1d1d1d;
-      --text: #eeeeec;
+
+      --header: #1D1D1D;
+
+      --text: #EEEEEC;
+
       --teal: #74C7C4;
+
       --yellow: #F6BC48;
+
+      --header-height: 68px;
+
     }
+
+
+
+    /* =========================================
+       RESET
+       ========================================= */
 
     * {
       box-sizing: border-box;
@@ -30,219 +68,448 @@
 
     html,
     body {
+
       margin: 0;
+
       width: 100%;
       min-height: 100%;
+
     }
 
+
     body {
+
       background: var(--background);
+
       color: var(--text);
 
-      font-family: "Montserrat", sans-serif;
+      font-family: "Montserrat", Arial, sans-serif;
+
       font-weight: 500;
 
       -webkit-font-smoothing: antialiased;
+
+      overflow-x: hidden;
+
     }
 
 
-    /* =============================
-       HEADER
-    ============================= */
+    img {
+      display: block;
+    }
 
-    header {
+
+
+    /* =========================================
+       HEADER
+       ========================================= */
+
+    .site-header {
+
       position: sticky;
+
       top: 0;
+
       z-index: 100;
 
-      height: 68px;
+      height: var(--header-height);
 
       background: var(--header);
+
     }
 
+
     .header-inner {
+
       width: calc(100% - 48px);
+
       height: 100%;
 
       margin: 0 auto;
 
       display: flex;
+
       align-items: center;
+
       justify-content: space-between;
+
     }
+
+
+
+    /* LOGO */
+
+    .brand {
+
+      display: flex;
+
+      align-items: center;
+
+      text-decoration: none;
+
+    }
+
 
     .logo {
+
       width: 185px;
+
       height: auto;
-      display: block;
+
     }
 
+
+
+    /* LEARN MORE */
+
     .learn-more {
+
       color: var(--text);
 
       text-decoration: none;
 
-      font-size: 0.88rem;
+      font-size: 0.85rem;
+
       font-weight: 700;
 
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
+
+      transition: color 0.2s ease;
+
     }
+
 
     .learn-more:hover {
+
       color: var(--teal);
+
     }
 
 
-    /* =============================
+
+    /* =========================================
        HERO
-    ============================= */
+       ========================================= */
 
     .hero {
-      min-height: calc(100vh - 68px);
+
+      height: calc(
+        100vh - var(--header-height)
+      );
+
+      min-height: 600px;
 
       display: flex;
+
       align-items: center;
+
+      background: var(--background);
+
+      overflow: hidden;
+
     }
 
+
     .hero-inner {
-      width: min(calc(100% - 80px), 1005px);
+
+      /*
+        79% reproduces the positioning
+        of your original design more closely.
+      */
+
+      width: 79%;
+
+      max-width: 1400px;
 
       margin: 0 auto;
 
       display: grid;
 
       grid-template-columns:
-        minmax(0, 1.25fr)
+        minmax(0, 1.55fr)
         minmax(300px, 0.75fr);
 
       align-items: center;
 
-      gap: 45px;
+      gap: 55px;
+
     }
 
 
-    /* LEFT */
+
+    /* =========================================
+       HERO TEXT
+       ========================================= */
 
     .hero-copy {
-      max-width: 670px;
+
+      max-width: 720px;
+
     }
+
 
     .eyebrow {
+
       margin: 0 0 18px;
 
-      font-size: 0.85rem;
+      color: var(--text);
+
+      font-size: 0.82rem;
+
       font-weight: 500;
 
-      letter-spacing: 0;
+      line-height: 1.2;
+
     }
 
+
     h1 {
+
       margin: 0;
 
-      font-size: clamp(3rem, 4.8vw, 4.2rem);
+      color: var(--text);
+
+      font-size: clamp(
+        3rem,
+        4.5vw,
+        3.8rem
+      );
 
       font-weight: 700;
 
-      line-height: 1.04;
+      line-height: 1.08;
 
-      letter-spacing: -0.045em;
+      letter-spacing: -0.04em;
+
     }
+
 
     .yellow-line {
+
       width: 40px;
+
       height: 2px;
 
-      margin: 24px 0 17px;
+      margin: 25px 0 17px;
 
       background: var(--yellow);
+
     }
 
+
     .description {
-      max-width: 650px;
+
+      max-width: 660px;
 
       margin: 0;
 
-      font-size: 0.95rem;
+      color: var(--text);
+
+      font-size: 0.93rem;
+
       font-weight: 500;
 
-      line-height: 1.15;
+      line-height: 1.18;
+
     }
 
 
-    /* RIGHT */
 
-    .hero-image-wrap {
-      height: min(76vh, 590px);
+    /* =========================================
+       AORTA IMAGE
+       ========================================= */
+
+    .hero-visual {
+
+      height: min(
+        74vh,
+        590px
+      );
 
       display: flex;
+
       align-items: center;
+
       justify-content: center;
+
     }
+
 
     .hero-image {
+
       width: 100%;
-      height: 100%;
+
+      max-width: 390px;
+
+      max-height: 590px;
 
       object-fit: contain;
+
     }
 
 
-    /* =============================
-       MOBILE
-    ============================= */
 
-    @media (max-width: 760px) {
+    /* =========================================
+       TABLET
+       ========================================= */
 
-      header {
-        height: 64px;
-      }
-
-      .header-inner {
-        width: calc(100% - 30px);
-      }
-
-      .logo {
-        width: 145px;
-      }
-
-      .learn-more {
-        font-size: 0.7rem;
-      }
-
-      .hero {
-        min-height: auto;
-
-        padding: 55px 0 30px;
-      }
+    @media (max-width: 950px) {
 
       .hero-inner {
+
+        width: calc(100% - 60px);
+
+        grid-template-columns:
+          minmax(0, 1.2fr)
+          minmax(260px, 0.8fr);
+
+        gap: 25px;
+
+      }
+
+
+      h1 {
+
+        font-size: clamp(
+          2.8rem,
+          6vw,
+          3.7rem
+        );
+
+      }
+
+
+      .hero-image {
+
+        max-width: 340px;
+
+      }
+
+    }
+
+
+
+    /* =========================================
+       MOBILE
+       ========================================= */
+
+    @media (max-width: 700px) {
+
+      :root {
+
+        --header-height: 64px;
+
+      }
+
+
+      .header-inner {
+
+        width: calc(100% - 30px);
+
+      }
+
+
+      .logo {
+
+        width: 145px;
+
+      }
+
+
+      .learn-more {
+
+        font-size: 0.68rem;
+
+      }
+
+
+
+      .hero {
+
+        height: auto;
+
+        min-height:
+          calc(
+            100vh -
+            var(--header-height)
+          );
+
+        padding: 55px 0 35px;
+
+        overflow: visible;
+
+      }
+
+
+      .hero-inner {
+
         width: calc(100% - 40px);
 
         grid-template-columns: 1fr;
 
         gap: 30px;
+
       }
+
 
       .eyebrow {
-        font-size: 0.72rem;
+
+        margin-bottom: 14px;
+
+        font-size: 0.69rem;
+
       }
+
 
       h1 {
-        font-size: clamp(2.5rem, 11vw, 3.7rem);
+
+        font-size: clamp(
+          2.45rem,
+          11vw,
+          3.5rem
+        );
+
+        line-height: 1.03;
+
       }
+
+
+      .yellow-line {
+
+        margin:
+          22px
+          0
+          16px;
+
+      }
+
 
       .description {
-        font-size: 0.88rem;
-        line-height: 1.35;
+
+        font-size: 0.83rem;
+
+        line-height: 1.4;
+
       }
 
-      .hero-image-wrap {
+
+      .hero-visual {
+
         height: 390px;
+
       }
+
 
       .hero-image {
-        max-width: 360px;
+
+        width: auto;
+
+        max-width: 320px;
+
+        height: 100%;
+
         margin: 0 auto;
+
       }
 
     }
@@ -251,14 +518,25 @@
 
 </head>
 
+
+
 <body>
 
 
-  <header>
+  <!-- =======================================
+       HEADER
+       ======================================= -->
+
+  <header class="site-header">
 
     <div class="header-inner">
 
-      <a href="#" aria-label="Aortico home">
+
+      <a
+        href="#"
+        class="brand"
+        aria-label="Aortico home"
+      >
 
         <img
           src="./aortico-logo.svg"
@@ -269,12 +547,16 @@
       </a>
 
 
+
       <a
         href="mailto:info@aortico.com"
         class="learn-more"
       >
+
         LEARN MORE
+
       </a>
+
 
     </div>
 
@@ -282,51 +564,83 @@
 
 
 
+  <!-- =======================================
+       LANDING PAGE
+       ======================================= -->
+
   <main class="hero">
+
 
     <div class="hero-inner">
 
 
+
+      <!-- LEFT SIDE -->
+
       <div class="hero-copy">
 
+
         <p class="eyebrow">
+
           BEYOND SIZE. TOWARD STRENGTH.
+
         </p>
 
 
+
         <h1>
-          Detect Aortic Fragility<br>
+
+          Detect Aortic Fragility
+
+          <br>
+
           Before Dissection
+
         </h1>
+
 
 
         <div class="yellow-line"></div>
 
 
+
         <p class="description">
-          AI-driven patient-specific assessment of aortic wall mechanics from imaging.<br>
+
+          AI-driven patient-specific assessment of aortic wall mechanics from imaging.
+
+          <br>
+
           Deeper insight for earlier, more confident treatment decisions.
+
         </p>
+
 
       </div>
 
 
 
-      <div class="hero-image-wrap">
+
+      <!-- RIGHT SIDE -->
+
+      <div class="hero-visual">
+
 
         <img
-          src="./assets/medical/aorta-hero.png"
+          src="./aortico/assets/medical/aorta-hero.png"
           alt="Aorta with biomechanical mesh overlay"
           class="hero-image"
         >
+
 
       </div>
 
 
     </div>
 
+
   </main>
 
 
 </body>
+
 </html>
