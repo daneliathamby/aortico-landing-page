@@ -211,29 +211,20 @@
 
 
     .hero-inner {
+    width: 88%;
+    max-width: 1250px;
+    margin: 0 auto;
 
-      /*
-        79% reproduces the positioning
-        of your original design more closely.
-      */
+    display: grid;
 
-      width: 95%;
+    grid-template-columns:
+      minmax(0, 1.15fr)
+      minmax(350px, 0.85fr);
 
-      max-width: 1400px;
+    align-items: center;
 
-      margin: 0 auto;
-
-      display: grid;
-
-      grid-template-columns:
-        minmax(0, 1.55fr)
-        minmax(300px, 0.75fr);
-
-      align-items: center;
-
-      gap: 55px;
-
-    }
+    gap: 10px;
+  }
 
 
 
@@ -320,21 +311,12 @@
        ========================================= */
 
     .hero-visual {
+    height: min(80vh, 700px);
 
-      height: min(
-        80vh,
-        700px
-      );
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      overflow: visible;
-
-    }
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
 
 
     .hero-image {
